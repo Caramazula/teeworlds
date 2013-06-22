@@ -258,6 +258,8 @@ void CPlayer::KillCharacter(int Weapon)
 		delete m_pCharacter;
 		m_pCharacter = 0;
 	}
+	
+	m_KillingSpree = 0;
 }
 
 void CPlayer::Respawn()
