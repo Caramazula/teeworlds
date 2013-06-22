@@ -217,6 +217,28 @@ int IGameController::OnCharacterDeath(CCharacter *pVictim, CPlayer *pKiller, int
 	}
 	if(Weapon == WEAPON_SELF)
 		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
+		
+	if(Weapon == WEAPON_SELF || pKiller->GetCID() == pVictim->GetPlayer()->GetCID() || Weapon == WEAPON_WORLD)
+		pVictim->GetPlayer()->m_KillStreak = 0;
+	else
+	{	
+		pKiller->m_KillStreak++;
+		char aBuf[256];
+			
+		if(pVictim->GetPlayer()->m_KillStreak >= 5)
+		{
+			str_format(aBuf, sizeof(aBuf), "%s's killing spree was ended by %s (%d Kills)", Server()->ClientName(pVictim->GetPlayer()->GetCID()), Server()->ClientName(pKiller->GetCID()), pVictim->GetPlayer()->m_KillStreak);
+			GameServer()->SendChatTarget(-1, aBuf);
+			GameServer()->CreateExplosion(pVictim->m_Pos, pKiller->GetCID(), 0, true);
+		}
+		if(pKiller->m_KillStreak % 5 == 0 && pKiller->m_KillStreak >= 5) 
+		{
+			str_format(aBuf, sizeof(aBuf), "%s is on a %d - killing spree!", Server()->ClientName(pKiller->GetCID()), pKiller->m_KillStreak);
+			GameServer()->SendChatTarget(-1, aBuf);
+		}
+
+		pVictim->GetPlayer()->m_KillStreak = 0;
+	}
 
 
 	// update spectator modes for dead players in survival
@@ -231,23 +253,31 @@ int IGameController::OnCharacterDeath(CCharacter *pVictim, CPlayer *pKiller, int
 }
 
 void IGameController::OnCharacterSpawn(CCharacter *pChr)
-{
+{	
+	// give start equipment
+	pChr->IncreaseHealth(10);
+
+	if(g_Config.m_SvWeapon != WEAPON_NINJA)
+		pChr->GiveWeapon(g_Config.m_SvWeapon, 10);
+	else
+		pChr->GiveNinja();
+		
 	if(m_GameFlags&GAMEFLAG_SURVIVAL)
 	{
 		// give start equipment
-		pChr->IncreaseHealth(10);
-		pChr->IncreaseArmor(5);
+		//pChr->IncreaseHealth(10);
+		//pChr->IncreaseArmor(5);
 
-		pChr->GiveWeapon(WEAPON_HAMMER, -1);
-		pChr->GiveWeapon(WEAPON_GUN, 10);
-		pChr->GiveWeapon(WEAPON_SHOTGUN, 10);
-		pChr->GiveWeapon(WEAPON_GRENADE, 10);
-		pChr->GiveWeapon(WEAPON_LASER, 5);
+		//pChr->GiveWeapon(WEAPON_HAMMER, -1);
+		//pChr->GiveWeapon(WEAPON_GUN, 10);
+		//pChr->GiveWeapon(WEAPON_SHOTGUN, 10);
+		//pChr->GiveWeapon(WEAPON_GRENADE, 10);
+		//pChr->GiveWeapon(WEAPON_LASER, 5);
 
 		// prevent respawn
 		pChr->GetPlayer()->m_RespawnDisabled = GetStartRespawnState();
 	}
-	else
+	/*else
 	{
 		// default health
 		pChr->IncreaseHealth(10);
@@ -255,7 +285,7 @@ void IGameController::OnCharacterSpawn(CCharacter *pChr)
 		// give default weapons
 		pChr->GiveWeapon(WEAPON_HAMMER, -1);
 		pChr->GiveWeapon(WEAPON_GUN, 10);
-	}
+	}*/
 }
 
 bool IGameController::OnEntity(int Index, vec2 Pos)
@@ -280,7 +310,7 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 	case ENTITY_SPAWN_BLUE:
 		m_aaSpawnPoints[2][m_aNumSpawnPoints[2]++] = Pos;
 		break;
-	case ENTITY_ARMOR_1:
+	/*case ENTITY_ARMOR_1:
 		Type = PICKUP_ARMOR;
 		break;
 	case ENTITY_HEALTH_1:
@@ -297,7 +327,7 @@ bool IGameController::OnEntity(int Index, vec2 Pos)
 		break;
 	case ENTITY_POWERUP_NINJA:
 		if(g_Config.m_SvPowerups)
-			Type = PICKUP_NINJA;
+			Type = PICKUP_NINJA;*/
 	}
 
 	if(Type != -1)
