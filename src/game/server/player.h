@@ -111,6 +111,8 @@ public:
 		int m_Min;
 		int m_Max;
 	} m_Latency;
+	
+	int m_KillingSpree;
 
 private:
 	CCharacter *m_pCharacter;
