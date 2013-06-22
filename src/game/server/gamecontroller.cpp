@@ -222,7 +222,7 @@ int IGameController::OnCharacterDeath(CCharacter *pVictim, CPlayer *pKiller, int
 		pVictim->GetPlayer()->m_KillingSpree = 0;
 	else
 	{	
-		pKiller->m_KillSpree++;
+		pKiller->m_KillingSpree++;
 		char aBuf[256];
 			
 		if(pVictim->GetPlayer()->m_KillingSpree >= 5)
@@ -237,7 +237,7 @@ int IGameController::OnCharacterDeath(CCharacter *pVictim, CPlayer *pKiller, int
 			GameServer()->SendChatTarget(-1, aBuf);
 		}
 
-		pVictim->GetPlayer()->m_KillStreak = 0;
+		pVictim->GetPlayer()->m_KillingSpree = 0;
 	}
 
 
