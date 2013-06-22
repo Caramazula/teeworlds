@@ -60,8 +60,8 @@ bool CCharacter::Spawn(CPlayer *pPlayer, vec2 Pos)
 	m_EmoteStop = -1;
 	m_LastAction = -1;
 	m_LastNoAmmoSound = -1;
-	m_ActiveWeapon = WEAPON_GUN;
-	m_LastWeapon = WEAPON_HAMMER;
+	m_ActiveWeapon = g_Config.m_SvWeapon;
+	m_LastWeapon = g_Config.m_SvWeapon;
 	m_QueuedWeapon = -1;
 
 	m_pPlayer = pPlayer;
@@ -119,7 +119,7 @@ void CCharacter::HandleNinja()
 	if(m_ActiveWeapon != WEAPON_NINJA)
 		return;
 
-	if ((Server()->Tick() - m_Ninja.m_ActivationTick) > (g_pData->m_Weapons.m_Ninja.m_Duration * Server()->TickSpeed() / 1000))
+	/*if ((Server()->Tick() - m_Ninja.m_ActivationTick) > (g_pData->m_Weapons.m_Ninja.m_Duration * Server()->TickSpeed() / 1000))
 	{
 		// time's up, return
 		m_aWeapons[WEAPON_NINJA].m_Got = false;
@@ -127,7 +127,7 @@ void CCharacter::HandleNinja()
 
 		SetWeapon(m_ActiveWeapon);
 		return;
-	}
+	}*/
 
 	// force ninja Weapon
 	SetWeapon(WEAPON_NINJA);
@@ -719,12 +719,13 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
-		Dmg = max(1, Dmg/2);
+		return false;
+		//Dmg = max(1, Dmg/2);
 
-	m_DamageTaken++;
+	//m_DamageTaken++;
 
 	// create healthmod indicator
-	if(Server()->Tick() < m_DamageTakenTick+25)
+	/*if(Server()->Tick() < m_DamageTakenTick+25)
 	{
 		// make sure that the damage indicators doesn't group together
 		GameServer()->CreateDamageInd(m_Pos, m_DamageTaken*0.25f, Dmg);
@@ -760,7 +761,9 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 		m_Health -= Dmg;
 	}
 
-	m_DamageTakenTick = Server()->Tick();
+	m_DamageTakenTick = Server()->Tick();*/
+	
+	m_Health = 0;
 
 	// do damage Hit sound
 	if(From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
