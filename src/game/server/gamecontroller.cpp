@@ -219,21 +219,21 @@ int IGameController::OnCharacterDeath(CCharacter *pVictim, CPlayer *pKiller, int
 		pVictim->GetPlayer()->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()*3.0f;
 		
 	if(Weapon == WEAPON_SELF || pKiller->GetCID() == pVictim->GetPlayer()->GetCID() || Weapon == WEAPON_WORLD)
-		pVictim->GetPlayer()->m_KillStreak = 0;
+		pVictim->GetPlayer()->m_KillSpree = 0;
 	else
 	{	
-		pKiller->m_KillStreak++;
+		pKiller->m_KillSpree++;
 		char aBuf[256];
 			
-		if(pVictim->GetPlayer()->m_KillStreak >= 5)
+		if(pVictim->GetPlayer()->m_KillSpree >= 5)
 		{
-			str_format(aBuf, sizeof(aBuf), "%s's killing spree was ended by %s (%d Kills)", Server()->ClientName(pVictim->GetPlayer()->GetCID()), Server()->ClientName(pKiller->GetCID()), pVictim->GetPlayer()->m_KillStreak);
+			str_format(aBuf, sizeof(aBuf), "%s's killing spree was ended by %s (%d Kills)", Server()->ClientName(pVictim->GetPlayer()->GetCID()), Server()->ClientName(pKiller->GetCID()), pVictim->GetPlayer()->m_KillSpree);
 			GameServer()->SendChatTarget(-1, aBuf);
 			GameServer()->CreateExplosion(pVictim->m_Pos, pKiller->GetCID(), 0, true);
 		}
-		if(pKiller->m_KillStreak % 5 == 0 && pKiller->m_KillStreak >= 5) 
+		if(pKiller->m_KillSpree % 5 == 0 && pKiller->m_KillSpree >= 5) 
 		{
-			str_format(aBuf, sizeof(aBuf), "%s is on a %d - killing spree!", Server()->ClientName(pKiller->GetCID()), pKiller->m_KillStreak);
+			str_format(aBuf, sizeof(aBuf), "%s is on a %d - killing spree!", Server()->ClientName(pKiller->GetCID()), pKiller->m_KillSpree);
 			GameServer()->SendChatTarget(-1, aBuf);
 		}
 
